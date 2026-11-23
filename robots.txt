@@ -1,0 +1,15 @@
+# VSM Scholars — https://vsmscholars.com
+User-agent: *
+Allow: /
+Disallow: /lead.php
+Disallow: /*.csv$
+
+# Let the ad and SEO crawlers in
+User-agent: AdsBot-Google
+Allow: /
+User-agent: AdsBot-Google-Mobile
+Allow: /
+User-agent: Googlebot-Image
+Allow: /
+
+Sitemap: https://vsmscholars.com/sitemap.xml

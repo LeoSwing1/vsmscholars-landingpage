@@ -19,7 +19,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;0,900;1,700&family=Manrope:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;0,900;1,700&family=Manrope:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" media="print" onload="this.media='all';this.onload=null" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;0,900;1,700&family=Manrope:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,600;0,700;0,800;0,900;1,700&family=Manrope:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"></noscript>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230A0A0B'/%3E%3Ctext x='32' y='43' font-family='Archivo,Arial,sans-serif' font-size='28' font-weight='900' fill='%23FF4D17' text-anchor='middle'%3EVS%3C/text%3E%3C/svg%3E">
 <style>
 :root{
@@ -263,6 +265,7 @@ footer{background:var(--ink);color:var(--txt-inv-mute);padding:clamp(40px,5vw,64
   box-shadow:0 1px 3px rgba(0,0,0,.5),0 10px 26px -10px rgba(0,0,0,.75),inset 0 0 0 1px rgba(255,255,255,.05)}
 .badge svg{width:100%;height:100%;display:block;border-radius:50%}
 .sheen{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none}
+html.splashing .sheen::after{animation:none}
 .sheen::after{content:"";position:absolute;top:-45%;left:-70%;width:48%;height:190%;transform:rotate(16deg);
   background:linear-gradient(100deg,transparent,rgba(255,255,255,.30),transparent);animation:sheen 7s ease-in-out infinite}
 @keyframes sheen{0%,74%{left:-70%}92%,100%{left:130%}}
@@ -281,18 +284,24 @@ footer{background:var(--ink);color:var(--txt-inv-mute);padding:clamp(40px,5vw,64
 /* ============ SPLASH ============ */
 #page{transition:filter 1s cubic-bezier(.2,.7,.2,1)}
 html.splashing,html.splashing body{overflow:hidden}
-html.splashing #page{filter:blur(20px) saturate(.8) brightness(.85)}
+html.splashing #page{filter:none}
+@supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+  html.splashing #page{filter:blur(13px) saturate(.85) brightness(.88)}
+}
 html.unblur #page{filter:none}
 #splash{position:fixed;inset:0;z-index:300;display:grid;place-items:center;pointer-events:none}
 #splash.off{display:none}
-.sp-veil{position:absolute;inset:0;background:radial-gradient(70% 60% at 50% 42%,rgba(20,14,12,.86),rgba(6,6,8,.94));transition:opacity 1s cubic-bezier(.2,.7,.2,1)}
+.sp-veil{position:absolute;inset:0;background:radial-gradient(70% 60% at 50% 42%,rgba(20,14,12,.78),rgba(6,6,8,.9));transition:opacity 1s cubic-bezier(.2,.7,.2,1)}
+@supports ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+  .sp-veil{-webkit-backdrop-filter:blur(14px) saturate(.85);backdrop-filter:blur(14px) saturate(.85)}
+}
 html.unblur .sp-veil{opacity:0}
-.sp-logo{position:relative;z-index:2;opacity:0;transform:translate3d(0,16px,0) scale(.9);will-change:transform,opacity}
+.sp-logo{position:relative;z-index:2;opacity:0;transform:translate3d(0,16px,0) scale(.9);will-change:transform,opacity;contain:layout paint}
 .lock-xl{flex-direction:column;gap:clamp(16px,2.4vw,24px);text-align:center;perspective:900px}
 .lock-xl .wm{align-items:center;gap:8px}
 .lock-xl .wm b{font-size:clamp(26px,4.6vw,40px);letter-spacing:-.045em}
 .lock-xl .wm>span{font-size:clamp(10px,1.1vw,12.5px);letter-spacing:.36em}
-.lock-xl .badge{box-shadow:0 6px 18px rgba(0,0,0,.55),0 40px 80px -30px rgba(255,77,23,.45),inset 0 0 0 1px rgba(255,255,255,.07)}
+.lock-xl .badge{will-change:transform;backface-visibility:hidden;box-shadow:0 6px 18px rgba(0,0,0,.55),0 40px 80px -30px rgba(255,77,23,.45),inset 0 0 0 1px rgba(255,255,255,.07)}
 .sp-skip{position:absolute;bottom:clamp(20px,4vw,36px);right:clamp(18px,4vw,34px);z-index:3;pointer-events:auto;
   background:transparent;border:1px solid rgba(251,249,244,.26);color:#D7D2C8;border-radius:999px;padding:9px 18px;
   font-family:Archivo,sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .4s,background .2s}
@@ -495,7 +504,194 @@ html.navin .hdr-nav a:nth-child(6){transition-delay:.32s}
 html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 .sp-trail{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,77,23,.55),transparent 70%);pointer-events:none;z-index:1}
 @media (prefers-reduced-motion:reduce){html.logoin #brandTarget .badge{animation:none}.hdr-nav a{transition:none}}
+
+/* ============ RENDERING BUDGET ============ */
+.cv{content-visibility:auto;contain-intrinsic-size:auto 760px}
+@media (prefers-reduced-motion:reduce){#glsl{display:none}}
+.mq,.rv-track{backface-visibility:hidden}
+
+/* ============ CONSENT BAR ============ */
+.consent-bar{position:fixed;left:16px;bottom:16px;z-index:140;max-width:min(430px,calc(100vw - 32px));
+  background:var(--ink);color:var(--txt-inv);border:1px solid var(--line-inv);border-radius:16px;
+  padding:18px 20px;box-shadow:0 24px 60px -20px rgba(0,0,0,.7);display:none}
+.consent-bar.on{display:block;animation:chatIn .3s cubic-bezier(.2,.7,.2,1)}
+.consent-bar p{font-size:13.6px;line-height:1.55;color:#D7D2C8;margin:0 0 14px}
+.consent-bar a{color:var(--accent-2);border-bottom:1px solid rgba(255,122,69,.4)}
+.consent-btns{display:flex;gap:9px;flex-wrap:wrap}
+.consent-bar .btn{padding:11px 18px;font-size:14px}
+@media (max-width:980px){.consent-bar{left:12px;right:12px;bottom:84px;max-width:none}}
+html.splashing .consent-bar{display:none!important}
 </style>
+
+<!-- ============================================================
+     SEARCH ENGINE VERIFICATION
+     Paste the code each tool gives you, then delete the comment markers.
+     ============================================================ -->
+<!-- <meta name="google-site-verification" content="PASTE_GOOGLE_CODE_HERE"> -->
+<!-- <meta name="msvalidate.01" content="PASTE_BING_CODE_HERE"> -->
+<!-- <meta name="facebook-domain-verification" content="PASTE_META_CODE_HERE"> -->
+<link rel="alternate" hreflang="en-IN" href="https://vsmscholars.com/demo/">
+<link rel="alternate" hreflang="x-default" href="https://vsmscholars.com/demo/">
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="dns-prefetch" href="https://www.googletagmanager.com">
+<link rel="dns-prefetch" href="https://connect.facebook.net">
+<meta name="author" content="VSM Scholars">
+<meta name="geo.region" content="IN-UP">
+<meta name="geo.placename" content="Meerut">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="VSM Scholars — digital skills institute in Meerut">
+
+<script>
+/* ============================================================================
+   MARKETING & MEASUREMENT — fill in the IDs you have, leave the rest blank.
+   Anything blank simply never loads, so there is no dead weight on the page.
+   ============================================================================ */
+window.VSM_MKT = {
+  gtm:       '',   // 'GTM-XXXXXXX'   Google Tag Manager container
+  ga4:       '',   // 'G-XXXXXXXXXX'  Google Analytics 4
+  gAds:      '',   // 'AW-XXXXXXXXX'  Google Ads conversion ID
+  gAdsLabel: '',   // 'AbCdEfGhIjK'   conversion label for a demo booking
+  pixel:     '',   // '1234567890123' Meta Pixel ID
+  clarity:   '',   // 'abcdefghij'    Microsoft Clarity (heatmaps + recordings)
+  linkedin:  '',   // '1234567'       LinkedIn Insight partner ID
+  bingUet:   '',   // '12345678'      Bing / Microsoft Ads UET tag
+
+  consentBanner: true   // false = treat consent as granted (only where the law allows)
+};
+
+(function (w, d) {
+  'use strict';
+  var M = w.VSM_MKT, DL = w.dataLayer = w.dataLayer || [];
+  function gtag() { DL.push(arguments); }
+  w.gtag = w.gtag || gtag;
+
+  /* ---------- Google Consent Mode v2 — set BEFORE any tag loads ---------- */
+  var saved = null;
+  try { saved = localStorage.getItem('vsm_consent'); } catch (e) {}
+  var granted = saved === 'granted' || M.consentBanner === false;
+
+  gtag('consent', 'default', {
+    ad_storage: granted ? 'granted' : 'denied',
+    ad_user_data: granted ? 'granted' : 'denied',
+    ad_personalization: granted ? 'granted' : 'denied',
+    analytics_storage: granted ? 'granted' : 'denied',
+    functionality_storage: 'granted',
+    security_storage: 'granted',
+    wait_for_update: 500
+  });
+  gtag('set', 'url_passthrough', true);
+  gtag('set', 'ads_data_redaction', !granted);
+
+  function load(src, attrs) {
+    var t = d.createElement('script'); t.async = true; t.src = src;
+    if (attrs) Object.keys(attrs).forEach(function (k) { t.setAttribute(k, attrs[k]); });
+    d.head.appendChild(t);
+    return t;
+  }
+
+  /* ---------- Google Tag Manager ---------- */
+  if (M.gtm) {
+    DL.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
+    load('https://www.googletagmanager.com/gtm.js?id=' + M.gtm);
+  }
+
+  /* ---------- GA4 + Google Ads ---------- */
+  if (M.ga4 || M.gAds) {
+    load('https://www.googletagmanager.com/gtag/js?id=' + (M.ga4 || M.gAds));
+    gtag('js', new Date());
+    if (M.ga4)  gtag('config', M.ga4,  { send_page_view: true, allow_enhanced_conversions: true });
+    if (M.gAds) gtag('config', M.gAds, { allow_enhanced_conversions: true });
+  }
+
+  /* ---------- Meta Pixel ---------- */
+  if (M.pixel) {
+    (function (f, b, e, v, n, t, s) {
+      if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
+      t = b.createElement(e); t.async = true; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
+    })(w, d, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    w.fbq('consent', granted ? 'grant' : 'revoke');
+    w.fbq('init', M.pixel);
+    w.fbq('track', 'PageView');
+  }
+
+  /* ---------- Microsoft Clarity ---------- */
+  if (M.clarity) {
+    (function (c, l, a, r, i, t, y) {
+      c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+      t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
+      y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+    })(w, d, 'clarity', 'script', M.clarity);
+  }
+
+  /* ---------- LinkedIn Insight ---------- */
+  if (M.linkedin) {
+    w._linkedin_partner_id = M.linkedin;
+    w._linkedin_data_partner_ids = w._linkedin_data_partner_ids || [];
+    w._linkedin_data_partner_ids.push(M.linkedin);
+    load('https://snap.licdn.com/li.lms-analytics/insight.min.js');
+  }
+
+  /* ---------- Bing / Microsoft Ads UET ---------- */
+  if (M.bingUet) {
+    w.uetq = w.uetq || [];
+    var u = d.createElement('script'); u.async = 1;
+    u.src = '//bat.bing.com/bat.js';
+    u.onload = function () { w.uetq = new UET({ ti: M.bingUet, q: w.uetq }); w.uetq.push('pageLoad'); };
+    d.head.appendChild(u);
+  }
+
+  /* ---------- one call sends an event everywhere ---------- */
+  var VSM = w.VSM = w.VSM || {};
+  VSM.eventId = function () {
+    return 'vsm_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+  };
+  VSM.track = function (name, params, opts) {
+    params = params || {}; opts = opts || {};
+    try { DL.push(Object.assign({ event: name }, params)); } catch (e) {}
+    try { if (M.ga4 || M.gAds) gtag('event', name, params); } catch (e) {}
+    try {
+      if (M.pixel) {
+        var std = { generate_lead: 'Lead', view_content: 'ViewContent', contact: 'Contact',
+                    schedule: 'Schedule', complete_registration: 'CompleteRegistration' };
+        var fbName = std[name];
+        var fbOpts = opts.eventId ? { eventID: opts.eventId } : undefined;
+        if (fbName) w.fbq('track', fbName, params, fbOpts);
+        else w.fbq('trackCustom', name, params, fbOpts);
+      }
+    } catch (e) {}
+    try { if (M.bingUet && w.uetq && w.uetq.push) w.uetq.push('event', name, params); } catch (e) {}
+    try { if (M.clarity && w.clarity) w.clarity('event', name); } catch (e) {}
+  };
+  /* Google Ads conversion + enhanced conversions (hashed in the browser) */
+  VSM.conversion = function (lead) {
+    if (!M.gAds || !M.gAdsLabel) return;
+    try {
+      var id = { email: (lead.email || '').trim().toLowerCase(), phone_number: '+91' + (lead.phone || '') };
+      gtag('set', 'user_data', id);
+      gtag('event', 'conversion', {
+        send_to: M.gAds + '/' + M.gAdsLabel,
+        value: lead.value || 1, currency: 'INR',
+        transaction_id: lead.ref || ''
+      });
+    } catch (e) {}
+  };
+  VSM.consent = function (state) {
+    var g = state === 'granted';
+    gtag('consent', 'update', {
+      ad_storage: g ? 'granted' : 'denied', ad_user_data: g ? 'granted' : 'denied',
+      ad_personalization: g ? 'granted' : 'denied', analytics_storage: g ? 'granted' : 'denied'
+    });
+    gtag('set', 'ads_data_redaction', !g);
+    try { if (M.pixel && w.fbq) w.fbq('consent', g ? 'grant' : 'revoke'); } catch (e) {}
+    try { localStorage.setItem('vsm_consent', state); } catch (e) {}
+    VSM.track('consent_' + state, {});
+  };
+  VSM.granted = granted;
+})(window, document);
+</script>
 </head>
 <body>
 
@@ -520,11 +716,11 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
       <circle cx="60" cy="60" r="59" fill="url(#gRing)"/>
       <circle cx="60" cy="60" r="58.2" fill="none" stroke="#FF4D17" stroke-width="1.6" opacity=".95"/>
       <circle cx="60" cy="60" r="54" fill="none" stroke="#FFFFFF" stroke-opacity=".10" stroke-width="1"/>
-      <path id="vsmArc" d="M 14.8 69 A 46.1 46.1 0 0 1 105.2 69" fill="none"/>
-      <text font-family="Archivo,Arial,sans-serif" font-size="9.1" font-weight="700" letter-spacing="1.55" fill="#EFEBE1">
+      <path id="vsmArc" d="M 14.9 43.6 A 48 48 0 0 1 105.1 43.6" fill="none"/>
+      <text font-family="Archivo,Arial,sans-serif" font-size="7.6" font-weight="700" letter-spacing="1.25" fill="#EFEBE1">
         <textPath href="#vsmArc" startOffset="50%" text-anchor="middle">THE DIGITAL SCHOOL</textPath>
       </text>
-      <g transform="translate(60 46) scale(.78) translate(-60 -46)">
+      <g transform="translate(60 51) scale(.72) translate(-60 -48)">
         <ellipse cx="60" cy="63" rx="17" ry="4" fill="#000" opacity=".35"/>
         <path d="M47.5 44.5v8.9c0 3.9 5.6 6.6 12.5 6.6s12.5-2.7 12.5-6.6v-8.9L60 49.6z" fill="url(#gCapBody)"/>
         <path d="M60 28.5 92.5 41 60 53.5 27.5 41z" fill="url(#gCapTop)"/>
@@ -534,8 +730,8 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
         <circle cx="86.5" cy="57.4" r="3.1" fill="#FFD2BC"/>
         <circle cx="85.4" cy="56.3" r="1" fill="#FFFFFF" opacity=".9"/>
       </g>
-      <text x="60" y="77.5" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-size="19.5" font-weight="900" letter-spacing="-.6" fill="#FF5A24">VSM</text>
-      <text x="60" y="89" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-size="8" font-weight="700" letter-spacing="3.4" fill="#EFEBE1">SCHOLARS</text>
+      <text x="60" y="82" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-size="20" font-weight="900" letter-spacing="-.6" fill="#FF5A24">VSM</text>
+      <text x="60" y="94" text-anchor="middle" font-family="Archivo,Arial,sans-serif" font-size="7.6" font-weight="700" letter-spacing="3.2" fill="#EFEBE1">SCHOLARS</text>
       <circle cx="60" cy="60" r="59" fill="url(#gGloss)"/>
     </symbol>
   </defs>
@@ -731,7 +927,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- PROBLEM -->
-<section class="sec">
+<section class="cv sec">
   <div class="wrap">
     <div class="head-2 rv">
       <div>
@@ -762,7 +958,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 
 
 <!-- WHY WE EXIST -->
-<section class="sec dark" id="about" style="padding:clamp(48px,5.5vw,84px) 0">
+<section class="cv sec dark" id="about" style="padding:clamp(48px,5.5vw,84px) 0">
   <div class="wrap">
     <div class="head-2 rv" style="margin-bottom:0;align-items:start">
       <div>
@@ -781,7 +977,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- COURSES -->
-<section class="sec" id="courses" style="background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+<section class="cv sec" id="courses" style="background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
   <div class="wrap">
     <div class="head-2 rv">
       <div>
@@ -902,7 +1098,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- NOT COACHING -->
-<section class="sec">
+<section class="cv sec">
   <div class="wrap">
     <div class="head-2 rv">
       <div>
@@ -941,7 +1137,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- STEPS -->
-<section class="sec dark">
+<section class="cv sec dark">
   <div class="wrap">
     <div class="head-2 rv">
       <div>
@@ -961,7 +1157,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- PROOF -->
-<section class="sec">
+<section class="cv sec">
   <div class="wrap">
     <div class="proof-grid">
       <div class="rv">
@@ -995,7 +1191,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 
 
 <!-- CAMPUS -->
-<section class="sec" id="campus">
+<section class="cv sec" id="campus">
   <div class="wrap">
     <div class="head-2 rv">
       <div>
@@ -1037,7 +1233,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- PLACEMENTS -->
-<section class="sec" id="placements" style="background:var(--paper-2);border-top:1px solid var(--line)">
+<section class="cv sec" id="placements" style="background:var(--paper-2);border-top:1px solid var(--line)">
   <div class="wrap">
     <div class="head-2 rv">
       <div>
@@ -1088,7 +1284,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- BATCHES -->
-<section class="sec" id="batches" style="background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+<section class="cv sec" id="batches" style="background:var(--paper-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
   <div class="wrap">
     <div class="head-2 rv">
       <div>
@@ -1153,7 +1349,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- FAQ -->
-<section class="sec" id="faq" style="background:var(--paper-2);border-top:1px solid var(--line)">
+<section class="cv sec" id="faq" style="background:var(--paper-2);border-top:1px solid var(--line)">
   <div class="wrap">
     <div style="text-align:center;max-width:720px;margin:0 auto clamp(30px,4vw,48px)" class="rv">
       <p class="eyebrow" style="justify-content:center">Before you enrol</p>
@@ -1174,7 +1370,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 
 
 <!-- READ BEFORE YOU ENROL -->
-<section class="sec" style="background:var(--paper-2)">
+<section class="cv sec" style="background:var(--paper-2)">
   <div class="wrap">
     <div class="honest rv">
       <p class="eyebrow">Read this before you enrol</p>
@@ -1192,7 +1388,7 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </section>
 
 <!-- FINAL -->
-<section class="sec dark">
+<section class="cv sec dark">
   <div class="wrap final rv">
     <p class="eyebrow" style="justify-content:center">Seats are limited</p>
     <h2 style="margin-top:16px">One class. Zero rupees.<br>Enough to decide on.</h2>
@@ -1252,6 +1448,15 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </footer>
 </div><!-- /#page -->
 
+
+<div class="consent-bar" id="consentBar" role="dialog" aria-label="Cookie choice">
+  <p>We use cookies to see which ads actually bring students in. Analytics and advertising cookies load only if you agree &mdash; the site works either way.</p>
+  <div class="consent-btns">
+    <button class="btn btn-primary" id="consentYes" type="button">Accept</button>
+    <button class="btn btn-ghost" id="consentNo" type="button">Only essential</button>
+  </div>
+</div>
+
 <button class="chat-fab" id="chatFab" type="button" aria-label="Chat with the VSM Scholars assistant">
   <span class="chat-dot"></span>
   <svg class="c" width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.3-.6L3 21l1.8-5.2A8.3 8.3 0 0 1 4 11.5 8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5Z"/></svg>
@@ -1286,42 +1491,295 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 </nav>
 <script type="application/ld+json">
 {
-  "@context":"https://schema.org",
-  "@graph":[
+  "@context": "https://schema.org",
+  "@graph": [
     {
-      "@type":["EducationalOrganization","LocalBusiness"],
-      "@id":"https://vsmscholars.com/#org",
-      "name":"VSM Scholars",
-      "alternateName":"VSM Scholars Meerut",
-      "description":"Digital skills institute in Meerut offering Digital Marketing, Advanced Graphic Designing and Video Editing courses taught on live agency client projects.",
-      "url":"https://vsmscholars.com/",
-      "telephone":"+91-82795-74755",
-      "email":"info@vsmgrowth.com",
-      "parentOrganization":{"@type":"Organization","name":"VSM Marketing","url":"https://vsmgrowth.com/"},
-      "address":{"@type":"PostalAddress","streetAddress":"Aakansha Tower, 3rd Floor, Mangal Pandey Nagar","addressLocality":"Meerut","addressRegion":"Uttar Pradesh","postalCode":"250001","addressCountry":"IN"},
-      "areaServed":[{"@type":"City","name":"Meerut"},{"@type":"City","name":"Ghaziabad"},{"@type":"City","name":"Noida"}],
-      "openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"10:00","closes":"19:00"}],
-      "sameAs":["https://instagram.com/vsmscholars","https://facebook.com/vsmscholars","https://vsmgrowth.com/"]
+      "@type": [
+        "EducationalOrganization",
+        "LocalBusiness"
+      ],
+      "@id": "https://vsmscholars.com/#org",
+      "name": "VSM Scholars",
+      "alternateName": "VSM Scholars Meerut",
+      "description": "Digital skills institute in Meerut offering Digital Marketing, Advanced Graphic Designing and Video Editing courses taught on live agency client projects.",
+      "url": "https://vsmscholars.com/",
+      "telephone": "+91-82795-74755",
+      "email": "info@vsmgrowth.com",
+      "parentOrganization": {
+        "@type": "Organization",
+        "name": "VSM Marketing",
+        "url": "https://vsmgrowth.com/"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Aakansha Tower, 3rd Floor, Mangal Pandey Nagar",
+        "addressLocality": "Meerut",
+        "addressRegion": "Uttar Pradesh",
+        "postalCode": "250001",
+        "addressCountry": "IN"
+      },
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "Meerut"
+        },
+        {
+          "@type": "City",
+          "name": "Ghaziabad"
+        },
+        {
+          "@type": "City",
+          "name": "Noida"
+        }
+      ],
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+          ],
+          "opens": "10:00",
+          "closes": "19:00"
+        }
+      ],
+      "sameAs": [
+        "https://instagram.com/vsmscholars",
+        "https://facebook.com/vsmscholars",
+        "https://vsmgrowth.com/"
+      ],
+      "image": "https://vsmscholars.com/og-image.jpg",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://vsmscholars.com/vsm-scholars-logo.png",
+        "width": 512,
+        "height": 512
+      },
+      "hasMap": "https://share.google/tWNXKK3oV4GFiah31",
+      "knowsAbout": [
+        "Digital marketing",
+        "Search engine optimisation",
+        "Google Ads",
+        "Meta Ads",
+        "Graphic design",
+        "Adobe Photoshop",
+        "Adobe Illustrator",
+        "Video editing",
+        "Adobe Premiere Pro",
+        "Social media marketing"
+      ],
+      "slogan": "Learn the skill. Earn from it."
     },
     {
-      "@type":"WebPage",
-      "@id":"https://vsmscholars.com/demo/",
-      "url":"https://vsmscholars.com/demo/",
-      "name":"Free Demo Class — Digital Marketing, Graphic Design & Video Editing Course in Meerut",
-      "inLanguage":"en-IN",
-      "isPartOf":{"@id":"https://vsmscholars.com/#org"}
+      "@type": "WebPage",
+      "@id": "https://vsmscholars.com/demo/",
+      "url": "https://vsmscholars.com/demo/",
+      "name": "Free Demo Class — Digital Marketing, Graphic Design & Video Editing Course in Meerut",
+      "inLanguage": "en-IN",
+      "isPartOf": {
+        "@id": "https://vsmscholars.com/#website"
+      },
+      "description": "Three job-ready courses in Meerut — Digital Marketing, Advanced Graphic Designing and Video Editing, taught on a working agency's real client projects. Free demo class.",
+      "primaryImageOfPage": {
+        "@type": "ImageObject",
+        "url": "https://vsmscholars.com/img/classroom-training.webp"
+      },
+      "breadcrumb": {
+        "@id": "https://vsmscholars.com/demo/#breadcrumb"
+      }
     },
-    {"@type":"Course","name":"Digital Marketing Course","description":"Meta Ads, Google Ads, SEO, Google Business Profile, GA4 and social media planning taught on live client campaigns.","provider":{"@id":"https://vsmscholars.com/#org"},"inLanguage":"en-IN","hasCourseInstance":[{"@type":"CourseInstance","courseMode":"onsite","location":{"@type":"Place","name":"VSM Scholars, Meerut"},"courseWorkload":"P4W"}]},
-    {"@type":"Course","name":"Advanced Graphic Designing Course","description":"Photoshop, Illustrator, typography, layout, brand identity and social creatives built as real client deliverables.","provider":{"@id":"https://vsmscholars.com/#org"},"inLanguage":"en-IN","hasCourseInstance":[{"@type":"CourseInstance","courseMode":"onsite","location":{"@type":"Place","name":"VSM Scholars, Meerut"},"courseWorkload":"P4W"}]},
-    {"@type":"Course","name":"Video Editing Course","description":"Premiere Pro, reels and shorts editing, sound design, subtitles, motion basics and showreel building.","provider":{"@id":"https://vsmscholars.com/#org"},"inLanguage":"en-IN","hasCourseInstance":[{"@type":"CourseInstance","courseMode":"onsite","location":{"@type":"Place","name":"VSM Scholars, Meerut"},"courseWorkload":"P4W"}]},
     {
-      "@type":"FAQPage",
-      "mainEntity":[
-        {"@type":"Question","name":"How much is the course fee?","acceptedAnswer":{"@type":"Answer","text":"The fee depends on the course and the batch, and instalments are available. The exact fee structure is given in writing after the free demo class."}},
-        {"@type":"Question","name":"I am a complete beginner. Does it start from the basics?","acceptedAnswer":{"@type":"Answer","text":"Yes, it starts from zero. 12th-pass students, graduates and working professionals all go through the same foundation module."}},
-        {"@type":"Question","name":"Is there a job guarantee?","acceptedAnswer":{"@type":"Answer","text":"No job guarantee is given. Students get live client projects, a portfolio, resume and interview preparation, job referrals and freelancing guidance. Top performers get a chance at an internship at VSM Marketing."}},
-        {"@type":"Question","name":"Are classes online or offline?","acceptedAnswer":{"@type":"Answer","text":"Classes are offline in Meerut, at Aakansha Tower, 3rd Floor, Mangal Pandey Nagar. Both weekday and weekend batches are available."}},
-        {"@type":"Question","name":"Do students get a certificate?","acceptedAnswer":{"@type":"Answer","text":"Yes, a course completion certificate is given, along with a portfolio of real client work."}}
+      "@type": "Course",
+      "name": "Digital Marketing Course",
+      "description": "Meta Ads, Google Ads, SEO, Google Business Profile, GA4 and social media planning taught on live client campaigns.",
+      "provider": {
+        "@id": "https://vsmscholars.com/#org"
+      },
+      "inLanguage": "en-IN",
+      "hasCourseInstance": [
+        {
+          "@type": "CourseInstance",
+          "courseMode": "onsite",
+          "location": {
+            "@type": "Place",
+            "name": "VSM Scholars, Meerut"
+          },
+          "courseWorkload": "P4W",
+          "courseSchedule": {
+            "@type": "Schedule",
+            "repeatFrequency": "Weekly",
+            "repeatCount": 1,
+            "byDay": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ]
+          }
+        }
+      ],
+      "url": "https://vsmscholars.com/demo/#courses",
+      "educationalLevel": "Beginner to job-ready",
+      "teaches": "Meta Ads, Google Ads, SEO, Google Business Profile, GA4 and social media planning taught on live client campaigns.",
+      "availableLanguage": [
+        "en",
+        "hi"
+      ]
+    },
+    {
+      "@type": "Course",
+      "name": "Advanced Graphic Designing Course",
+      "description": "Photoshop, Illustrator, typography, layout, brand identity and social creatives built as real client deliverables.",
+      "provider": {
+        "@id": "https://vsmscholars.com/#org"
+      },
+      "inLanguage": "en-IN",
+      "hasCourseInstance": [
+        {
+          "@type": "CourseInstance",
+          "courseMode": "onsite",
+          "location": {
+            "@type": "Place",
+            "name": "VSM Scholars, Meerut"
+          },
+          "courseWorkload": "P4W",
+          "courseSchedule": {
+            "@type": "Schedule",
+            "repeatFrequency": "Weekly",
+            "repeatCount": 1,
+            "byDay": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ]
+          }
+        }
+      ],
+      "url": "https://vsmscholars.com/demo/#courses",
+      "educationalLevel": "Beginner to job-ready",
+      "teaches": "Photoshop, Illustrator, typography, layout, brand identity and social creatives built as real client deliverables.",
+      "availableLanguage": [
+        "en",
+        "hi"
+      ]
+    },
+    {
+      "@type": "Course",
+      "name": "Video Editing Course",
+      "description": "Premiere Pro, reels and shorts editing, sound design, subtitles, motion basics and showreel building.",
+      "provider": {
+        "@id": "https://vsmscholars.com/#org"
+      },
+      "inLanguage": "en-IN",
+      "hasCourseInstance": [
+        {
+          "@type": "CourseInstance",
+          "courseMode": "onsite",
+          "location": {
+            "@type": "Place",
+            "name": "VSM Scholars, Meerut"
+          },
+          "courseWorkload": "P4W",
+          "courseSchedule": {
+            "@type": "Schedule",
+            "repeatFrequency": "Weekly",
+            "repeatCount": 1,
+            "byDay": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ]
+          }
+        }
+      ],
+      "url": "https://vsmscholars.com/demo/#courses",
+      "educationalLevel": "Beginner to job-ready",
+      "teaches": "Premiere Pro, reels and shorts editing, sound design, subtitles, motion basics and showreel building.",
+      "availableLanguage": [
+        "en",
+        "hi"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How much is the course fee?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The fee depends on the course and the batch, and instalments are available. The exact fee structure is given in writing after the free demo class."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "I am a complete beginner. Does it start from the basics?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, it starts from zero. 12th-pass students, graduates and working professionals all go through the same foundation module."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there a job guarantee?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No job guarantee is given. Students get live client projects, a portfolio, resume and interview preparation, job referrals and freelancing guidance. Top performers get a chance at an internship at VSM Marketing."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are classes online or offline?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Classes are offline in Meerut, at Aakansha Tower, 3rd Floor, Mangal Pandey Nagar. Both weekday and weekend batches are available."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do students get a certificate?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, a course completion certificate is given, along with a portfolio of real client work."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vsmscholars.com/#website",
+      "url": "https://vsmscholars.com/",
+      "name": "VSM Scholars",
+      "inLanguage": "en-IN",
+      "publisher": {
+        "@id": "https://vsmscholars.com/#org"
+      }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": "https://vsmscholars.com/demo/#breadcrumb",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://vsmscholars.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Free demo class",
+          "item": "https://vsmscholars.com/demo/"
+        }
       ]
     }
   ]
@@ -1336,12 +1794,10 @@ html.logoin #brandTarget .badge{animation:land .66s cubic-bezier(.2,.8,.25,1)}
 var CFG = window.CFG = {
   wa:        '918279574755',        // WhatsApp number with country code, no +
   tel:       '+918279574755',
-  ga4:       '',                   // 'G-XXXXXXXXXX'  — GA4 measurement ID
-  pixel:     '',                   // '1234567890123' — Meta Pixel ID
-  gAds:      '',                   // 'AW-123456789'  — Google Ads conversion ID
-  gAdsLabel: '',                   // 'AbC-D_efGh'    — conversion label
-  endpoint:  'lead.php',           // lead.php emails you + saves a CSV (see that file's CONFIG)
-  batchDays: [1, 16]               // a new batch starts on these dates
+  endpoint:  'lead.php',            // lead.php emails you + saves a CSV (see that file's CONFIG)
+  batchDays: [1, 16]                // a new batch starts on these dates
+  /* Analytics and ad IDs are not here — they live in VSM_MKT, near the top
+     of this file, because consent has to be set before any tag loads. */
 };
 
 (function () {
@@ -1350,33 +1806,9 @@ var CFG = window.CFG = {
   var $ = function (s, r) { return (r || d).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || d).querySelectorAll(s)); };
 
-  /* ---------- tracking (loads only when an ID is set) ---------- */
-  w.dataLayer = w.dataLayer || [];
-  function gtag() { w.dataLayer.push(arguments); }
-  if (CFG.ga4 || CFG.gAds) {
-    var g = d.createElement('script'); g.async = true;
-    g.src = 'https://www.googletagmanager.com/gtag/js?id=' + (CFG.ga4 || CFG.gAds);
-    d.head.appendChild(g);
-    gtag('js', new Date());
-    if (CFG.ga4) gtag('config', CFG.ga4);
-    if (CFG.gAds) gtag('config', CFG.gAds);
-  }
-  if (CFG.pixel) {
-    (function (f, b, e, v, n, t, s) {
-      if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
-      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
-      t = b.createElement(e); t.async = true; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s);
-    })(w, d, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-    w.fbq('init', CFG.pixel); w.fbq('track', 'PageView');
-  }
-  function track(name, params) {
-    try { if (CFG.ga4) gtag('event', name, params || {}); } catch (e) {}
-    try {
-      if (CFG.pixel) {
-        if (name === 'generate_lead') w.fbq('track', 'Lead', params || {});
-        else w.fbq('trackCustom', name, params || {});
-      }
-    } catch (e) {}
+  /* ---------- every event goes through the marketing module in the head ---------- */
+  function track(name, params, opts) {
+    try { if (w.VSM && w.VSM.track) w.VSM.track(name, params || {}, opts || {}); } catch (e) {}
   }
 
   /* ---------- capture campaign data from the URL ---------- */
@@ -1489,9 +1921,13 @@ var CFG = window.CFG = {
       return;
     }
 
+    var evId = (w.VSM && w.VSM.eventId) ? w.VSM.eventId() : '';
     var lead = {
       name: name, email: em, phone: ph, course: course, batch: batch, stage: stage,
       company: ($('#company') || {}).value || '',
+      event_id: evId, event_source_url: w.location.href,
+      fbp: (d.cookie.match(/_fbp=([^;]+)/) || [])[1] || '',
+      fbc: (d.cookie.match(/_fbc=([^;]+)/) || [])[1] || '',
       source: 'Website form', submitted_at: new Date().toISOString()
     };
     Object.keys(ATTR).forEach(function (k) { lead[k] = ATTR[k]; });
@@ -1525,8 +1961,8 @@ var CFG = window.CFG = {
       } catch (e) {}
     }
 
-    track('generate_lead', { course: course, batch: batch, value: 1, currency: 'INR' });
-    if (CFG.gAds && CFG.gAdsLabel) { try { gtag('event', 'conversion', { send_to: CFG.gAds + '/' + CFG.gAdsLabel }); } catch (e) {} }
+    track('generate_lead', { course: course, batch: batch, value: 1, currency: 'INR' }, { eventId: evId });
+    try { if (w.VSM && w.VSM.conversion) w.VSM.conversion({ email: em, phone: ph, ref: evId }); } catch (e) {}
 
     $('#thxName').textContent = name.split(' ')[0];
     $('#waAgain').href = link;
@@ -1609,7 +2045,7 @@ var CFG = window.CFG = {
       /* a short ember trail so the travel reads clearly */
       var trail = setInterval(function () {
         var r = big.getBoundingClientRect();
-        if (!r.width) return;
+        if (!r.width || splash.querySelectorAll('.sp-trail').length > 5) return;
         var sz = Math.max(12, r.width * 0.6);
         var dot = d.createElement('i');
         dot.className = 'sp-trail';
@@ -1620,7 +2056,7 @@ var CFG = window.CFG = {
                             { duration: 680, easing: 'ease-out', fill: 'forwards' });
         if (a && a.finished && a.finished.then) a.finished.then(function () { dot.remove(); }).catch(function () { dot.remove(); });
         else setTimeout(function () { dot.remove(); }, 700);
-      }, 52);
+      }, 95);
       timers.push(setTimeout(function () { clearInterval(trail); }, 1420));
 
       /* clear the blur a beat into the flight, so you watch it cross a sharpening page */
@@ -1642,8 +2078,16 @@ var CFG = window.CFG = {
 
     timers.push(setTimeout(finish, 6500));   /* failsafe */
   }
-  if (d.readyState === 'complete') run();
-  else w.addEventListener('load', run);
+  function boot() {
+    /* a font swapping in halfway through the flight causes a visible jolt */
+    if (d.fonts && d.fonts.ready && d.fonts.ready.then) {
+      var done = false, go = function () { if (!done) { done = true; run(); } };
+      d.fonts.ready.then(go).catch(go);
+      setTimeout(go, 1600);                       /* never wait on a slow font CDN */
+    } else run();
+  }
+  if (d.readyState === 'complete') boot();
+  else w.addEventListener('load', boot);
 
   /* ---------------- 2. 3D tilt on the badge ---------------- */
   if (w.matchMedia && w.matchMedia('(hover:hover)').matches && !w.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -1668,9 +2112,7 @@ var CFG = window.CFG = {
 
   var WA = (w.CFG && w.CFG.wa) || '918279574755';
   function waLink(m) { return 'https://wa.me/' + WA + '?text=' + encodeURIComponent(m); }
-  function ev(n, p) { try { if (w.dataLayer) w.dataLayer.push(['event', n, p || {}]); } catch (e) {} 
-    try { if (w.gtag) w.gtag('event', n, p || {}); } catch (e) {}
-    try { if (w.fbq) { n === 'generate_lead' ? w.fbq('track', 'Lead', p || {}) : w.fbq('trackCustom', n, p || {}); } } catch (e) {} }
+  function ev(n, p) { try { if (w.VSM && w.VSM.track) w.VSM.track(n, p || {}); } catch (e) {} }
 
   var KB = [
     { k: ['fee', 'fees', 'price', 'cost', 'charge', 'how much', 'kitna', 'emi', 'instalment', 'installment', 'payment', 'expensive'],
@@ -1770,7 +2212,11 @@ var CFG = window.CFG = {
     var msg = 'Hi VSM Scholars! I would like to book a free demo class.\n\nName: ' + lead.name + '\nWhatsApp: +91' + lead.phone +
               (lead.email ? '\nEmail: ' + lead.email : '') + '\nSource: Website chat';
     var link = waLink(msg);
+    var evId = (w.VSM && w.VSM.eventId) ? w.VSM.eventId() : '';
     var payload = { name: lead.name, email: lead.email || '', phone: lead.phone, course: lead.course || '',
+                    event_id: evId, event_source_url: w.location.href,
+                    fbp: (d.cookie.match(/_fbp=([^;]+)/) || [])[1] || '',
+                    fbc: (d.cookie.match(/_fbc=([^;]+)/) || [])[1] || '',
                     source: 'Website chatbot', submitted_at: new Date().toISOString() };
     var at = w.VSM_ATTR || {};
     Object.keys(at).forEach(function (k) { payload[k] = at[k]; });
@@ -1786,7 +2232,8 @@ var CFG = window.CFG = {
         })
         .catch(function () {});
     } catch (e) {}
-    ev('generate_lead', { method: 'chatbot', value: 1, currency: 'INR' });
+    try { if (w.VSM && w.VSM.track) w.VSM.track('generate_lead', { method: 'chatbot', value: 1, currency: 'INR' }, { eventId: evId }); } catch (e) {}
+    try { if (w.VSM && w.VSM.conversion) w.VSM.conversion({ email: lead.email || '', phone: lead.phone, ref: evId }); } catch (e) {}
     think(function () {
       say('Thanks <b>' + lead.name + '</b>! ✅ Sent — the team has your request and will call <b>+91' + lead.phone + '</b> within 30 minutes during working hours.'
         + '\n\nWant to start the thread yourself?\n<a href="' + link + '" target="_blank" rel="noopener">Message us on WhatsApp</a>');
@@ -2027,6 +2474,16 @@ var CFG = window.CFG = {
   var $$ = function (q, r) { return Array.prototype.slice.call((r || d).querySelectorAll(q)); };
   var slow = w.matchMedia && w.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* run heavy work only once the intro is finished, and only when idle */
+  var idle = w.requestIdleCallback || function (fn) { return setTimeout(fn, 180); };
+  function whenReady(fn) {
+    if (!d.documentElement.classList.contains('splashing')) { idle(fn); return; }
+    var iv = setInterval(function () {
+      if (!d.documentElement.classList.contains('splashing')) { clearInterval(iv); clearTimeout(to); idle(fn); }
+    }, 120);
+    var to = setTimeout(function () { clearInterval(iv); idle(fn); }, 7000);
+  }
+
   /* ============================================================
      REVIEWS — paste real ones here and they appear in the rails.
      Keep them honest: only what students actually said.
@@ -2087,7 +2544,7 @@ var CFG = window.CFG = {
     }
     if (slow) { track.style.transform = 'none'; return; }
     if (dir === -1) x = -half;
-    raf = requestAnimationFrame(frame);
+    whenReady(function () { if (!raf) { last = 0; raf = requestAnimationFrame(frame); } });
 
     /* stop burning frames while off screen */
     if ('IntersectionObserver' in w) {
@@ -2144,6 +2601,17 @@ var CFG = window.CFG = {
   /* ---------- hero shader ---------- */
   (function () {
     var cv = $('#glsl'); if (!cv || slow) return;
+
+    /* the gradient fallback already looks right, so skip the shader where it
+       would cost more than it gives: weak CPUs, data saver, small phones */
+    var nav = w.navigator || {};
+    var conn = nav.connection || {};
+    var weak = (nav.hardwareConcurrency && nav.hardwareConcurrency <= 4)
+            || conn.saveData === true
+            || /2g|slow-2g|3g/.test(conn.effectiveType || '')
+            || (w.matchMedia('(pointer:coarse)').matches && w.innerWidth < 820);
+    if (weak) return;
+
     var gl = cv.getContext('webgl', { antialias: false, alpha: true, depth: false, powerPreference: 'low-power' })
           || cv.getContext('experimental-webgl');
     if (!gl) return;
@@ -2155,7 +2623,7 @@ var CFG = window.CFG = {
       'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
       'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);',
       ' return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
-      'float fbm(vec2 p){float v=0.,a=.5;for(int k=0;k<5;k++){v+=a*n(p);p*=2.02;a*=.5;}return v;}',
+      'float fbm(vec2 p){float v=0.,a=.5;for(int k=0;k<3;k++){v+=a*n(p);p*=2.04;a*=.5;}return v;}',
       'void main(){',
       ' vec2 uv=(gl_FragCoord.xy-.5*u_r)/u_r.y;',
       ' float t=u_t*.045;',
@@ -2195,10 +2663,13 @@ var CFG = window.CFG = {
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     var uR = gl.getUniformLocation(pr, 'u_r'), uT = gl.getUniformLocation(pr, 'u_t'), uM = gl.getUniformLocation(pr, 'u_m');
-    var mouse = [0, 0], target = [0, 0], dpr = Math.min(1.5, w.devicePixelRatio || 1);
+    var mouse = [0, 0], target = [0, 0];
 
     function size() {
       var r = cv.getBoundingClientRect();
+      /* render at most ~900px wide and let CSS stretch it: a slow-moving
+         gradient loses nothing, and the fill rate drops by 4-9x */
+      var dpr = Math.min(1, (900 / Math.max(1, r.width)));
       cv.width = Math.max(1, Math.floor(r.width * dpr));
       cv.height = Math.max(1, Math.floor(r.height * dpr));
       gl.viewport(0, 0, cv.width, cv.height);
@@ -2212,22 +2683,28 @@ var CFG = window.CFG = {
       target = [(e.clientX - r.left) * dpr, (r.height - (e.clientY - r.top)) * dpr];
     });
 
-    var t0 = performance.now(), live = true, raf;
+    var t0 = performance.now(), live = true, raf, lastDraw = 0;
     cv.addEventListener('webglcontextlost', function (e) { e.preventDefault(); live = false; cancelAnimationFrame(raf); });
     cv.addEventListener('webglcontextrestored', function () { live = true; size(); raf = requestAnimationFrame(draw); });
 
     function draw(now) {
       if (!live) return;
+      raf = requestAnimationFrame(draw);
+      if (now - lastDraw < 33) return;          /* 30fps is plenty for a drifting gradient */
+      lastDraw = now;
       mouse[0] += (target[0] - mouse[0]) * .05;
       mouse[1] += (target[1] - mouse[1]) * .05;
       gl.uniform2f(uR, cv.width, cv.height);
       gl.uniform2f(uM, mouse[0], mouse[1]);
       gl.uniform1f(uT, (now - t0) / 1000);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-      raf = requestAnimationFrame(draw);
     }
-    raf = requestAnimationFrame(draw);
-    cv.classList.add('on');
+    whenReady(function () { if (!raf) raf = requestAnimationFrame(draw); cv.classList.add('on'); });
+
+    d.addEventListener('visibilitychange', function () {
+      if (d.hidden) { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+      else if (live && !raf) raf = requestAnimationFrame(draw);
+    });
 
     /* pause the shader once the hero is scrolled past */
     if ('IntersectionObserver' in w) {
@@ -2237,6 +2714,131 @@ var CFG = window.CFG = {
           else if (!e.isIntersecting && raf) { cancelAnimationFrame(raf); raf = null; }
         });
       }, { threshold: 0 }).observe(cv);
+    }
+  })();
+})();
+</script>
+
+<script>
+/* ========== CONSENT BAR + CORE WEB VITALS + ENGAGEMENT ========== */
+(function () {
+  'use strict';
+  var w = window, d = document;
+  var $ = function (q) { return d.querySelector(q); };
+  var T = function (n, p, o) { try { if (w.VSM && w.VSM.track) w.VSM.track(n, p || {}, o || {}); } catch (e) {} };
+
+  /* ---------- 1. consent ---------- */
+  (function () {
+    var bar = $('#consentBar'); if (!bar) return;
+    var M = w.VSM_MKT || {}, stored = null;
+    try { stored = localStorage.getItem('vsm_consent'); } catch (e) {}
+    if (M.consentBanner === false || stored) return;
+    setTimeout(function () { bar.classList.add('on'); }, 1400);
+    function close(state) {
+      try { if (w.VSM && w.VSM.consent) w.VSM.consent(state); } catch (e) {}
+      bar.classList.remove('on');
+    }
+    $('#consentYes').addEventListener('click', function () { close('granted'); });
+    $('#consentNo').addEventListener('click', function () { close('denied'); });
+  })();
+
+  /* ---------- 2. Core Web Vitals, reported into GA4 ---------- */
+  (function () {
+    if (!('PerformanceObserver' in w)) return;
+    var sent = {};
+    function rate(n, v) {
+      var good = { LCP: 2500, CLS: 0.1, INP: 200, FCP: 1800, TTFB: 800 }[n];
+      var poor = { LCP: 4000, CLS: 0.25, INP: 500, FCP: 3000, TTFB: 1800 }[n];
+      return v <= good ? 'good' : v <= poor ? 'needs-improvement' : 'poor';
+    }
+    function report(name, value) {
+      if (sent[name]) return; sent[name] = 1;
+      var v = name === 'CLS' ? Math.round(value * 1000) / 1000 : Math.round(value);
+      T('web_vitals', { metric_name: name, metric_value: v, metric_rating: rate(name, v),
+                        metric_id: name + '-' + Date.now(), non_interaction: true });
+    }
+    function obs(type, cb, opts) {
+      try { var o = new PerformanceObserver(cb); o.observe(Object.assign({ type: type, buffered: true }, opts || {})); return o; }
+      catch (e) { return null; }
+    }
+    var lcp = 0, lcpO = obs('largest-contentful-paint', function (l) {
+      var es = l.getEntries(); lcp = es[es.length - 1].startTime;
+    });
+    var cls = 0;
+    obs('layout-shift', function (l) {
+      l.getEntries().forEach(function (e) { if (!e.hadRecentInput) cls += e.value; });
+    });
+    var inp = 0;
+    obs('event', function (l) {
+      l.getEntries().forEach(function (e) { if (e.duration > inp) inp = e.duration; });
+    }, { durationThreshold: 40 });
+    obs('paint', function (l) {
+      l.getEntries().forEach(function (e) { if (e.name === 'first-contentful-paint') report('FCP', e.startTime); });
+    });
+    try {
+      var nav = performance.getEntriesByType('navigation')[0];
+      if (nav) report('TTFB', nav.responseStart);
+    } catch (e) {}
+    function flush() {
+      if (lcpO) { try { lcpO.takeRecords(); } catch (e) {} }
+      if (lcp) report('LCP', lcp);
+      report('CLS', cls);
+      if (inp) report('INP', inp);
+    }
+    d.addEventListener('visibilitychange', function () { if (d.hidden) flush(); });
+    w.addEventListener('pagehide', flush);
+  })();
+
+  /* ---------- 3. engagement: scroll depth, dwell, sections, outbound ---------- */
+  (function () {
+    var marks = [25, 50, 75, 90], hit = {}, ticking = false;
+    function check() {
+      var h = d.documentElement.scrollHeight - w.innerHeight;
+      var pct = h > 0 ? (w.scrollY / h) * 100 : 100;
+      marks.forEach(function (m) {
+        if (!hit[m] && pct >= m) { hit[m] = 1; T('scroll_depth', { percent: m, non_interaction: true }); }
+      });
+      ticking = false;
+    }
+    w.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(check); } }, { passive: true });
+
+    var t0 = Date.now(), stages = [15, 30, 60, 120, 240], si = 0;
+    var timer = setInterval(function () {
+      if (si >= stages.length) { clearInterval(timer); return; }
+      if ((Date.now() - t0) / 1000 >= stages[si]) {
+        T('time_on_page', { seconds: stages[si], non_interaction: true });
+        si++;
+      }
+    }, 5000);
+
+    if ('IntersectionObserver' in w) {
+      var seen = {};
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          var id = e.target.id; if (!id || seen[id]) return;
+          seen[id] = 1; io.unobserve(e.target);
+          T('section_view', { section: id, non_interaction: true });
+        });
+      }, { threshold: 0.4 });
+      ['courses', 'side-by-side', 'numbers', 'campus', 'placements', 'batches', 'reviews', 'faq']
+        .forEach(function (id) { var el = d.getElementById(id); if (el) io.observe(el); });
+    }
+
+    d.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
+      var href = a.getAttribute('href') || '';
+      if (/^https?:/i.test(href) && a.hostname && a.hostname !== w.location.hostname) {
+        T('outbound_click', { link_domain: a.hostname, link_url: href.slice(0, 120) });
+      }
+    }, true);
+
+    /* the demo form is the whole point of the page — watch it closely */
+    var form = $('#leadForm');
+    if (form) {
+      form.addEventListener('change', function (e) {
+        if (e.target && e.target.id) T('form_field', { field: e.target.id, non_interaction: true });
+      });
     }
   })();
 })();
